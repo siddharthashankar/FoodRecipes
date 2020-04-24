@@ -1,6 +1,8 @@
 package com.sid.foodrecipes;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +16,7 @@ import com.sid.foodrecipes.requests.ServiceGenerator;
 import com.sid.foodrecipes.requests.responses.RecipeResponse;
 import com.sid.foodrecipes.requests.responses.RecipeSearchResponse;
 import com.sid.foodrecipes.util.Constants;
+import com.sid.foodrecipes.viewmodels.RecipeListViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,15 +27,20 @@ import retrofit2.Response;
 
 public class RecipeListActivity extends BaseActivity {
     private static final String TAG = "RecipeListActivity";
+    private RecipeListViewModel mRecipeListViewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_list);
-        findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
+        mRecipeListViewModel = ViewModelProviders.of(this).get(RecipeListViewModel.class);
+       subscribeObservers();
+    }
+
+    private void subscribeObservers(){
+        mRecipeListViewModel.getRecipes().observe(this, new Observer<List<Recipe>>() {
             @Override
-            public void onClick(View v) {
-                testRetrofitRequest();
-                Toast.makeText(RecipeListActivity.this,"clicked",Toast.LENGTH_LONG).show();
+            public void onChanged(List<Recipe> recipes) {
+                Log.d(TAG,"Response: "+recipes.size());
             }
         });
     }
