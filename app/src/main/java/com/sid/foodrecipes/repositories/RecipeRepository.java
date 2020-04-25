@@ -29,5 +29,12 @@ public class RecipeRepository {
         return mRecipeApiClient.getRecipe();
     }
 
+    public void searchRecipeApi(String query, int pageNumber){
+            if(pageNumber == 0){
+                pageNumber = 1;
+            }
+            mRecipeApiClient.searchRecipesApi(query, pageNumber);
+    }
+
 
 }

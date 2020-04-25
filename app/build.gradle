@@ -43,4 +43,6 @@ dependencies {
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.2.0'
+    //Cardview
+    implementation "androidx.cardview:cardview:1.0.0"
 }

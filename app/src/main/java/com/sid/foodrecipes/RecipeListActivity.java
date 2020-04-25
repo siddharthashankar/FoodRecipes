@@ -34,22 +34,38 @@ public class RecipeListActivity extends BaseActivity {
         setContentView(R.layout.activity_recipe_list);
         mRecipeListViewModel = ViewModelProviders.of(this).get(RecipeListViewModel.class);
        subscribeObservers();
+       findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               testRetrofitRequest2();
+           }
+       });
     }
 
     private void subscribeObservers(){
         mRecipeListViewModel.getRecipes().observe(this, new Observer<List<Recipe>>() {
             @Override
             public void onChanged(List<Recipe> recipes) {
-                Log.d(TAG,"Response: "+recipes.size());
+                if(recipes != null){
+                    for(Recipe recipe: recipes){
+                        Log.d(TAG,"Response: "+recipe.getTitle());
+                    }
+                }
+
             }
         });
     }
-
+    private void searchRecipeApi(String query, int pageNumber){
+        mRecipeListViewModel.searchRecipeApi(query, pageNumber);
+    }
+    private void testRetrofitRequest2(){
+        searchRecipeApi("chicken",1);
+    }
     private void testRetrofitRequest(){
-        RecipeAPI recipeAPI = ServiceGenerator.getRecipeAPI();
+/*         RecipeAPI recipeAPI = ServiceGenerator.getRecipeAPI();
 
         // Test 1st API
-/*        Call<RecipeSearchResponse> responseCall = recipeAPI.searchRecipe(Constants.API_KEY,"chicken","1");
+       Call<RecipeSearchResponse> responseCall = recipeAPI.searchRecipe(Constants.API_KEY,"chicken","1");
 
         responseCall.enqueue(new Callback<RecipeSearchResponse>() {
             @Override
@@ -74,7 +90,7 @@ public class RecipeListActivity extends BaseActivity {
             public void onFailure(Call<RecipeSearchResponse> call, Throwable t) {
                 Log.d(TAG,"Response Error2: "+t.getMessage());
             }
-        });*/
+        });
 
         // Test 2nd API
 
@@ -93,7 +109,7 @@ public class RecipeListActivity extends BaseActivity {
             public void onFailure(Call<RecipeResponse> call, Throwable t) {
 
             }
-        });
+        });  */
 
     }
 
