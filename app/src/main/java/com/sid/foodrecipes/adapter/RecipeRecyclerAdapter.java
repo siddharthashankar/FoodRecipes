@@ -10,9 +10,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.sid.foodrecipes.R;
 import com.sid.foodrecipes.models.Recipe;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int RECIPE_TYPE = 1;
+    private static final int LOADING_TYPE = 2;
+
     private List<Recipe> mRecipe;
     private OnRecipeListener onRecipeListener;
 
@@ -23,21 +28,40 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_recipe_list_item,viewGroup,false);
-        return new RecipeViewHolder(view, onRecipeListener);
+        View view = null;
+
+        switch (viewType) { // i is the view type constant
+            case RECIPE_TYPE:{
+                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_recipe_list_item, viewGroup, false);
+                return new RecipeViewHolder(view, onRecipeListener);
+            }
+
+            case LOADING_TYPE:{
+                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_loading_list_item, viewGroup, false);
+                return new LoadingViewHolder(view);
+            }
+
+            default:{
+                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_recipe_list_item, viewGroup, false);
+                return new RecipeViewHolder(view, onRecipeListener);
+            }
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        RequestOptions requestOptions = new RequestOptions().placeholder(R.drawable.ic_launcher_background);
-        Glide.with(viewHolder.itemView.getContext())
-                .setDefaultRequestOptions(requestOptions)
-                .load(mRecipe.get(position).getImage_url())
-                .into(((RecipeViewHolder)viewHolder).img);
+        int itemViewType = getItemViewType(position);
+        if (itemViewType == RECIPE_TYPE) {
+            RequestOptions requestOptions = new RequestOptions().placeholder(R.drawable.ic_launcher_background);
+            Glide.with(viewHolder.itemView.getContext())
+                    .setDefaultRequestOptions(requestOptions)
+                    .load(mRecipe.get(position).getImage_url())
+                    .into(((RecipeViewHolder) viewHolder).img);
 
-        ((RecipeViewHolder)viewHolder).title.setText(mRecipe.get(position).getTitle());
-        ((RecipeViewHolder)viewHolder).publisher.setText(mRecipe.get(position).getPublisher());
-        ((RecipeViewHolder)viewHolder).socialScore.setText(String.valueOf(Math.round(mRecipe.get(position).getSocial_rank())));
+            ((RecipeViewHolder) viewHolder).title.setText(mRecipe.get(position).getTitle());
+            ((RecipeViewHolder) viewHolder).publisher.setText(mRecipe.get(position).getPublisher());
+            ((RecipeViewHolder) viewHolder).socialScore.setText(String.valueOf(Math.round(mRecipe.get(position).getSocial_rank())));
+        }
     }
 
     @Override
@@ -47,6 +71,36 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
        return 0;
     }
+    @Override
+    public int getItemViewType(int position) {
+        if(mRecipe.get(position).getTitle().equals("LOADING...")){
+            return LOADING_TYPE;
+        }
+        else{
+            return RECIPE_TYPE;
+        }
+    }
+    public void displayLoading(){
+        if(!isLoading()){
+            Recipe recipe = new Recipe();
+            recipe.setTitle("LOADING...");
+            List<Recipe> loadingList = new ArrayList<>();
+            loadingList.add(recipe);
+            mRecipe = loadingList;
+            notifyDataSetChanged();
+        }
+    }
+    private boolean isLoading() {
+        if (mRecipe != null) {
+            if (mRecipe.size() > 0) {
+                if (mRecipe.get(mRecipe.size() - 1).getTitle().equals("LOADING...")) {
+                    return true;
+                }
+            }
+        }
+            return false;
+        }
+
 
     public void setRecipe(List<Recipe> recipe){
         this.mRecipe = recipe;

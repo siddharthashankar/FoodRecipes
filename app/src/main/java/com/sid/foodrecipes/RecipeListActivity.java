@@ -1,33 +1,17 @@
 package com.sid.foodrecipes;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-
 import com.sid.foodrecipes.adapter.OnRecipeListener;
 import com.sid.foodrecipes.adapter.RecipeRecyclerAdapter;
 import com.sid.foodrecipes.models.Recipe;
-import com.sid.foodrecipes.requests.RecipeAPI;
-import com.sid.foodrecipes.requests.ServiceGenerator;
-import com.sid.foodrecipes.requests.responses.RecipeResponse;
-import com.sid.foodrecipes.requests.responses.RecipeSearchResponse;
-import com.sid.foodrecipes.util.Constants;
 import com.sid.foodrecipes.viewmodels.RecipeListViewModel;
-
-import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class RecipeListActivity extends BaseActivity implements OnRecipeListener {
     private static final String TAG = "RecipeListActivity";
@@ -39,10 +23,12 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_list);
         rv = (RecyclerView)findViewById(R.id.rv);
+        //viewModel
         mRecipeListViewModel = ViewModelProviders.of(this).get(RecipeListViewModel.class);
         initRecyclerView();
         subscribeObservers();
-        testRetrofitRequest2();
+        initSearchView();
+        //testRetrofitRequest2();
     }
 
     private void subscribeObservers(){
@@ -60,12 +46,28 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
         rv.setAdapter(mAdapter);
         rv.setLayoutManager(new LinearLayoutManager(this));
     }
-    private void searchRecipeApi(String query, int pageNumber){
+    /*private void searchRecipeApi(String query, int pageNumber){
         mRecipeListViewModel.searchRecipeApi(query, pageNumber);
+    }*/
+    private void initSearchView(){
+        final SearchView searchView = findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                mAdapter.displayLoading();
+                mRecipeListViewModel.searchRecipeApi(query, 1);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
     }
-    private void testRetrofitRequest2(){
+ /*   private void testRetrofitRequest2(){
         searchRecipeApi("chicken",1);
-    }
+    }*/
     private void testRetrofitRequest(){
 /*         RecipeAPI recipeAPI = ServiceGenerator.getRecipeAPI();
 
