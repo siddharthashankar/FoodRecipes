@@ -9,6 +9,7 @@ import android.os.Bundle;
 import com.sid.foodrecipes.adapter.OnRecipeListener;
 import com.sid.foodrecipes.adapter.RecipeRecyclerAdapter;
 import com.sid.foodrecipes.models.Recipe;
+import com.sid.foodrecipes.util.VerticalSpacingItemDecoration;
 import com.sid.foodrecipes.viewmodels.RecipeListViewModel;
 import java.util.List;
 
@@ -28,6 +29,9 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
         initRecyclerView();
         subscribeObservers();
         initSearchView();
+        if(!mRecipeListViewModel.isViewingRecipies()){
+            displaySearchCategory();
+        }
         //testRetrofitRequest2();
     }
 
@@ -36,13 +40,17 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
             @Override
             public void onChanged(List<Recipe> recipes) {
                 if(recipes != null){
-                    mAdapter.setRecipe(recipes);
+                    if (mRecipeListViewModel.isViewingRecipies()){
+                        mAdapter.setRecipe(recipes);
+                    }
                 }
             }
         });
     }
     private void initRecyclerView(){
         mAdapter = new RecipeRecyclerAdapter(this);
+        VerticalSpacingItemDecoration decoration = new VerticalSpacingItemDecoration(30);
+        rv.addItemDecoration(decoration);
         rv.setAdapter(mAdapter);
         rv.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -127,6 +135,23 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
 
     @Override
     public void onCategoryClick(String category) {
+        mAdapter.displayLoading();
+        mRecipeListViewModel.searchRecipeApi(category, 1);
+    }
+
+    private void displaySearchCategory(){
+        mRecipeListViewModel.setIsViewingRecipies(false);
+        mAdapter.displaySearchCategory();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mRecipeListViewModel.onBackPressed()){
+            super.onBackPressed();
+        }else {
+            displaySearchCategory();
+        }
+
 
     }
 }
