@@ -19,11 +19,13 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
     private RecipeListViewModel mRecipeListViewModel;
     private RecyclerView rv;
     private RecipeRecyclerAdapter mAdapter;
+    private SearchView mSearchView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_list);
         rv = (RecyclerView)findViewById(R.id.rv);
+        mSearchView = findViewById(R.id.searchView);
         //viewModel
         mRecipeListViewModel = ViewModelProviders.of(this).get(RecipeListViewModel.class);
         initRecyclerView();
@@ -41,6 +43,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
             public void onChanged(List<Recipe> recipes) {
                 if(recipes != null){
                     if (mRecipeListViewModel.isViewingRecipies()){
+                        mRecipeListViewModel.setIsPerformingQuery(false);
                         mAdapter.setRecipe(recipes);
                     }
                 }
@@ -49,7 +52,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
     }
     private void initRecyclerView(){
         mAdapter = new RecipeRecyclerAdapter(this);
-        VerticalSpacingItemDecoration decoration = new VerticalSpacingItemDecoration(30);
+        VerticalSpacingItemDecoration decoration = new VerticalSpacingItemDecoration(5);
         rv.addItemDecoration(decoration);
         rv.setAdapter(mAdapter);
         rv.setLayoutManager(new LinearLayoutManager(this));
@@ -58,12 +61,12 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
         mRecipeListViewModel.searchRecipeApi(query, pageNumber);
     }*/
     private void initSearchView(){
-        final SearchView searchView = findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 mAdapter.displayLoading();
                 mRecipeListViewModel.searchRecipeApi(query, 1);
+                mSearchView.clearFocus();
                 return false;
             }
 
@@ -137,6 +140,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
     public void onCategoryClick(String category) {
         mAdapter.displayLoading();
         mRecipeListViewModel.searchRecipeApi(category, 1);
+        mSearchView.clearFocus();
     }
 
     private void displaySearchCategory(){
