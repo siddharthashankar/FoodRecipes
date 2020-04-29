@@ -37,6 +37,12 @@ public class RecipeListViewModel extends ViewModel {
         this.mIsViewingRecipies = mIsViewingRecipies;
     }
 
+    public void searchNextPage(){
+        if (!isPerformingQuery && mIsViewingRecipies){
+            mRecipeRepository.searchNextPage();
+        }
+    }
+
     public boolean onBackPressed(){
         if(isPerformingQuery){
             mRecipeRepository.cancelRequest();

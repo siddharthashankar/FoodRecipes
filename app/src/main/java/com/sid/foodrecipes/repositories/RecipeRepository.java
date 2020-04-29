@@ -11,6 +11,8 @@ import java.util.List;
 public class RecipeRepository {
     private static RecipeRepository mInstance = null;
     private RecipeApiClient mRecipeApiClient;
+    private String mQuery;
+    private int mPageNumber;
     //private MutableLiveData<List<Recipe>> mRecipes;
 
     public static RecipeRepository getInstance(){
@@ -33,7 +35,13 @@ public class RecipeRepository {
             if(pageNumber == 0){
                 pageNumber = 1;
             }
+            mQuery = query;
+            mPageNumber = pageNumber;
             mRecipeApiClient.searchRecipesApi(query, pageNumber);
+    }
+
+    public void searchNextPage(){
+        searchRecipeApi(mQuery,mPageNumber+1);
     }
 
     public void cancelRequest(){

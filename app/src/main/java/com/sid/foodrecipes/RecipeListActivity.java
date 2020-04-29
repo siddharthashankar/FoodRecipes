@@ -1,5 +1,6 @@
 package com.sid.foodrecipes;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -17,14 +18,14 @@ import java.util.List;
 public class RecipeListActivity extends BaseActivity implements OnRecipeListener {
     private static final String TAG = "RecipeListActivity";
     private RecipeListViewModel mRecipeListViewModel;
-    private RecyclerView rv;
+    private RecyclerView recyclerView;
     private RecipeRecyclerAdapter mAdapter;
     private SearchView mSearchView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_list);
-        rv = (RecyclerView)findViewById(R.id.rv);
+        recyclerView = (RecyclerView)findViewById(R.id.rv);
         mSearchView = findViewById(R.id.searchView);
         //viewModel
         mRecipeListViewModel = ViewModelProviders.of(this).get(RecipeListViewModel.class);
@@ -53,13 +54,22 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
     private void initRecyclerView(){
         mAdapter = new RecipeRecyclerAdapter(this);
         VerticalSpacingItemDecoration decoration = new VerticalSpacingItemDecoration(5);
-        rv.addItemDecoration(decoration);
-        rv.setAdapter(mAdapter);
-        rv.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(decoration);
+        recyclerView.setAdapter(mAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (!recyclerView.canScrollVertically(1)){
+                    //searchNextPage
+                    mRecipeListViewModel.searchNextPage();
+                }
+            }
+        });
+        
     }
-    /*private void searchRecipeApi(String query, int pageNumber){
-        mRecipeListViewModel.searchRecipeApi(query, pageNumber);
-    }*/
+
     private void initSearchView(){
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
