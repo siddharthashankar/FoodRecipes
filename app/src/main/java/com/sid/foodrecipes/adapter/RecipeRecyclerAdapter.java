@@ -22,6 +22,7 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private static final int RECIPE_TYPE = 1;
     private static final int LOADING_TYPE = 2;
     private static final int CATEGORY_TYPE = 3;
+    private static final int EXHAUSTED_TYPE = 4;
 
     private List<Recipe> mRecipe;
     private OnRecipeListener onRecipeListener;
@@ -44,6 +45,11 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             case LOADING_TYPE: {
                 view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_loading_list_item, viewGroup, false);
                 return new LoadingViewHolder(view);
+            }
+
+            case EXHAUSTED_TYPE:{
+                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_search_exhausted, viewGroup, false);
+                return new SearchExhaustedViewHolder(view);
             }
 
             case CATEGORY_TYPE: {
@@ -97,11 +103,33 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             return CATEGORY_TYPE;
         } else if (mRecipe.get(position).getTitle().equals("LOADING...")) {
             return LOADING_TYPE;
-        } else if (position == mRecipe.size()-1 && position != 0 && ! mRecipe.get(position).getTitle().equals("EXHAUSTED...")){
+        } else if(mRecipe.get(position).getTitle().equals("EXHAUSTED...")){
+            return EXHAUSTED_TYPE;
+        }
+        else if (position == mRecipe.size()-1 && position != 0 && ! mRecipe.get(position).getTitle().equals("EXHAUSTED...")){
             return LOADING_TYPE;
         }
         else {
             return RECIPE_TYPE;
+        }
+    }
+
+    public void setQueryExhausted(){
+        hideLoading();
+        Recipe exhaustedRecipe = new Recipe();
+        exhaustedRecipe.setTitle("EXHAUSTED...");
+        mRecipe.add(exhaustedRecipe);
+        notifyDataSetChanged();
+    }
+
+    private void hideLoading(){
+        if(isLoading()){
+            for(Recipe recipe: mRecipe){
+                if(recipe.getTitle().equals("LOADING...")){
+                    mRecipe.remove(recipe);
+                }
+            }
+            notifyDataSetChanged();
         }
     }
 

@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+
 import com.sid.foodrecipes.adapter.OnRecipeListener;
 import com.sid.foodrecipes.adapter.RecipeRecyclerAdapter;
 import com.sid.foodrecipes.models.Recipe;
@@ -49,6 +51,16 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
                         mRecipeListViewModel.setIsPerformingQuery(false);
                         mAdapter.setRecipe(recipes);
                     }
+                }
+            }
+        });
+
+        mRecipeListViewModel.isQueryExhausted().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean){
+                    Log.d(TAG,"On Changed: query is exhausted...");
+                    mAdapter.setQueryExhausted();
                 }
             }
         });
