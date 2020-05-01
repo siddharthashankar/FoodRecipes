@@ -6,6 +6,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Intent;
 import android.os.Bundle;
 import com.sid.foodrecipes.adapter.OnRecipeListener;
 import com.sid.foodrecipes.adapter.RecipeRecyclerAdapter;
@@ -142,8 +144,10 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
     }
 
     @Override
-    public void onRecipeClick(int id) {
-
+    public void onRecipeClick(int position) {
+        Intent intent = new Intent(RecipeListActivity.this, RecipeActivity.class);
+        intent.putExtra("recipe", mAdapter.getSelectedRecipe(position));
+        startActivity(intent);
     }
 
     @Override
