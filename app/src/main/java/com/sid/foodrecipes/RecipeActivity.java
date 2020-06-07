@@ -23,8 +23,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.sid.foodrecipes.models.Recipe;
 import com.sid.foodrecipes.viewmodels.RecipeViewModel;
 
-import java.io.InputStream;
-import java.net.URL;
 
 public class RecipeActivity extends BaseActivity {
     private static final String TAG = "RecipeActivity";
